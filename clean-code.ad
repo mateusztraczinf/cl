@@ -1,0 +1,939 @@
+= Clean Code
+Mateusz Tracz <mateusz.tracz@consafelogistics.com>
+v1.0, 2019-04-09
+:toc:
+:toclevels: 2
+:source-highlighter: prettify
+
+== Samo komentujący się kod
+Powinniśmy pisać kod na tyle jasny aby sam się opisywał. Nazwy metod, funkcji, klas czy zmiennych powinny być w miarę krótkie, opisujące dokładnie dany problem.
+
+- kod należy pisać w taki sposób aby jego odbiorca mógł rozeznać się w nim w miarę szybko
+- formatować kod tak aby był jak najbardziej czytelny (odstępy między zmiennymi, metodami)
+- preferowane jest pisanie kodu jak najbardziej czytelnego zamiast pisanie komentarzy. Jednym z powodów jest to, że dość często programista zapomina zmienić zawartość komentarza, przy zmianie np. nazwy metody.
+
+=== [green]#Poprawnie#
+
+[source,csharp]
+----
+public Blogs GetAuthorizedUserBlogs
+----
+
+=== [red]#Błędnie#
+
+[source,csharp]
+----
+/*Pobiera blogi zalogowanego użytkownika*/
+public Blogs GetAuthUsrBlgs
+----
+
+== Nazewnictwo
+Poniżej przykład błędnego i poprawnego nazewnictwa zmiennych:
+
+=== [red]#Błędnie#
+[source,csharp]
+----
+List<decimal> c = new List<decimal>() { 6.40m, 10.12m, 21,12m};
+decimal a = 0;
+foreach (var w in c)
+{
+    a += w;
+}
+return a;
+----
+
+
+=== [green]#Poprawnie#
+[source,csharp]
+----
+List<decimal> ceny = new List<decimal>() { 6.40m, 10.12m, 21,12m};
+decimal wartosc = 0;
+foreach (var cena in ceny)
+{
+    wartosc += cena;
+}
+return wartosc;
+----
+
+Należy zawsze tak nazywać zmienne aby przekazywały odpowiednią logikę, przekładającą się na wymagania aplikacji.
+Programista czytając [red]#"błędny"# kod nie odgadnie zbyt szybko zamysłu jego autora.
+Nie widomo co oznacza zmienna "c" czy "a".
+Pół biedy jeśli napisze jeszcze komentarze opisujące te zmienne.
+Jeśli jednak brak jest komentarzy wówczas kod staje się całkowicie nieczytelny i trudny do zrozumienia.
+Inaczej sytuacja wygląda w [green]#"Poprawnym"# kodzie.
+Wszystkie zmienne są odpowiednio nazwane. Zamiast "c" mamy "ceny", co od razu wskazuje, że mamy do czynienia z ceną.
+Nie musimy się zbytnio wysilać podczas analizy kodu.
+
+Kod należy tak pisać jak byśmy czytali książkę.
+
+=== Nazewnictwo klas
+
+Poniżej przykład błędnego i poprawnego nazewnictwa klas:
+
+==== [red]#Błędnie#
+- WebsiteBO
+- Utility
+- Common
+- MojeFunkcje
+- ObiektyKrisa
+- Manager
+- Processor
+- Info
+
+Błędnie nazwane klasy działają jak magnes na leniwych programistów.
+Jeśli projekt zawiera błędnie nazwane klasy wówczas
+programistę korci aby dodać jakąkolwiek metodę/funkcję do błędnie nazwanej klasy np. "Utility".
+Jest to dość często spotykane, jednakże nie właściwe podejście.
+Każda klasa powinna być nazwana adekwatnie do celów biznesowych projektów.
+
+Przykład: Mamy funkcję "DisplayMessage" zamiast dodawać ją do klasy "Common" należałoby utworzyć nową klasę np. "SystemMessage". Wówczas wywołanie wyglądałoby następująco: SystemMessage.Display().
+
+==== [green]#Poprawnie#
+
+- User
+- Account
+- QueryBuilder
+- ProductRepository
+
+Poprawne nazwy prowadzą do mniejszych i spójnych klas.
+Im mniej metody/funkcji w klasie tym lepiej dla projektu.
+Staramy się tworzyć więcej klas - rozdzielamy odpowiedzialność biznesową na wiele klas.
+
+==== Zasady przy tworzeniu nazw klas:
+- rzeczownik,
+- konkretne nazwy, prowadzą do mniejszych i spójnych klas,
+- pojedyncza odpowiedzialność (metody dotyczące użytkownika umieszczamy np. w klasie "User" zamiast "Common").
+	Klasa "ProductRepository" powinna zawierać metody dotyczące tylko produktów a nie np. do wysyłki maili,
+- należy unikać generycznych sufixów jak "ProductManager" czy "ProdutInfo".
+	Jak brzmi lepiej: Inicjuję klasę "Produkt" czy inicjuję klasę "info o produkcie"/"kierownik produktów" :)
+
+
+=== Nazewnictwo metod
+Poniżej przykład błędnego i poprawnego nazewnictwa metod:
+
+==== [red]#Błędnie#
+- Get
+- Process
+- Pending
+- DoIt
+- Start
+- On_Init, Page_Load ...
+
+==== [green]#Poprawnie#
+- GetRegisteredUsers
+- IsValidSubmission
+- ImportDocument
+- SendEmail
+
+.W nazewictwie metod należy uważać na:
+- and,
+- or,
+- if
+
+Jeśli nazwa posiada jeden z powyższych wówczas jest to sygnał ostrzegawczy,
+że metoda będzie robiła więcej niż jedną rzecz (logikę),
+co jest nie właściwe np. SaveAndSendEmail, AddOrSave.
+W takiej sytuacji należałoby dodać dwie różne metody: Add and Save.
+
+*Pamiętajmy*: metody powinny wykonywać tylko jedną (logiczną) rzecz.
+
+Nazwy metod nie powinny zawiera skrótów myślowych czyli.
+
+[red]#*Błędnie*#: GetRegUsr
+
+[green]#*Poprawnie*#: GetRegisteredUser
+
+*Pamiętajmy*: nazywajmy metody, klasy i zmienne w sposób pełny, bez skróconych nazw.
+Czasami dłuższa nazwa wniesie więcej czytelności do kodu niż jej skrócona wersja.
+
+
+=== Nazewnictwo zmienncyh: logiczne (bool)
+
+Nazwy zmiennych typu (bool) powinny brzmieć jak pytania typu prawda/fałsz czyli:
+
+==== [red]#Błędnie#
+- open
+- start
+- status
+- login
+
+==== [green]#Poprawnie#
+- isOpen
+- done
+- isActive
+- loggedIn
+
+=== Nazewnictwo zmiennych: bądź symetryczny
+
+Poniżej przykład błędnego i poprawnego nazewnictwa:
+
+==== [red]#Błędnie#
+- on/disable
+- quick/slow
+- lock/open
+- slow/max
+
+==== [green]#Poprawnie#
+- on/off
+- fast/slow
+- lock/unlock
+- min/max
+
+Przeciwstawne nazwy zmiennych powinny być adekwatne do samych siebie.
+Czyli jeśli słowem przeciwstawnym dla "Włączony" jest "Wyłączony" to używajmy właśnie takich nazw a nie "Włączony/Nie aktywny".
+
+== Warunki (if)
+
+=== Warunki logiczne (bool)
+
+Poniżej przykład błędnego i poprawnego warunku:
+
+==== [red]#Błędnie#
+[source,csharp]
+----
+if (zalogowany == true)
+{
+
+}
+----
+
+==== [green]#Poprawnie#
+[source,csharp]
+----
+if (zalogowany)
+{
+
+}
+----
+
+W przypadku błędnego warunku porównanie z „true” jest zupełnie nie potrzebne.
+Bardziej czytelne jest wersja poprawna.
+
+=== Przypisywanie wartości bezwarunkowo
+==== [red]#Błędnie#
+[source,csharp]
+----
+bool ideNaObiad;
+
+if (kasaWportfelu > 6.00)
+{
+     ideNaObiad = true;
+}
+else
+{
+     ideNaObiad = false;
+}
+----
+
+==== [green]#Poprawnie#
+[source,csharp]
+----
+bool ideNaObiad = kasaWportfelu > 6.00;
+----
+
+Wersja poprawna jest bardziej czytelna i zawiera mniej kodu.
+
+
+=== Korzystaj z pozytywnych warunków nie negatywnych
+==== [red]#Błędnie#
+[source,csharp]
+----
+if (!nieZalogowany)
+{
+
+}
+----
+
+==== [green]#Poprawnie#
+[source,csharp]
+----
+if (zalogowany)
+{
+
+}
+----
+
+Jak widać błędną wersję czyta się o wiele trudniej niż poprawną.
+
+=== Korzystaj z warunków typu ternary – trójstopniowy
+
+==== [red]#Błędnie#
+[source,csharp]
+----
+int obnizka;
+
+if (jestPromocja)
+{
+     obnizka = 10;
+}
+else
+{
+     obnizka = 0;
+}
+----
+
+==== [green]#Poprawnie#
+[source,csharp]
+----
+int obnizka = jestPromocja ? 10 : 0;
+----
+
+Wersja poprawna jest bardziej czytelna i zawiera mniej kodu.
+
+Należy pamiętać aby nie zagnieżdżać tego typu warunków, gdyż staną się nie czytelne.
+
+
+==== [red]#Błędnie#
+[source,csharp]
+----
+int obnizka = jestPromocja ? 10 : (jestInnaPromocja ? 20 : 0);
+----
+
+
+=== Korzystaj z enumów lub słałych zamiast „Hard Coded Strings”
+
+==== [red]#Błędnie#
+[source,csharp]
+----
+If (stanowisko == "kierownik")
+----
+
+==== [green]#Poprawnie#
+[source,csharp]
+----
+If (stanowisko == TypStanowiska.Kierownik)
+----
+
+Wersja poprawna daje nam: silne typowanie (kompilator pilnuje zmian),
+Intelllisense oraz możliwości takie jak: Jump to declaration.
+
+=== Unikaj magicznych liczb „Magic Numbers”
+
+==== [red]#Błędnie#
+[source,csharp]
+----
+If (liczbaLat > 21)
+
+If (status == 2)
+----
+
+==== [green]#Poprawnie#
+[source,csharp]
+----
+const int liczbaLatPozwalajacaNaPicieAlkoholu = 21;
+
+If (liczbaLat > liczbaLatPozwalajacaNaPicieAlkoholu)
+If (status == Status.Zablokowany)
+----
+
+
+=== Unikaj zawiłych warunków
+==== [red]#Błędnie#
+[source,csharp]
+----
+If (samochod.Rok > 2000 && (samochod.Marka == "kaszlak" || samochod.Marka == "syrenka")
+    && (samochod.numer.StartsWith("awd") || samochod.numer.StartsWith("23dwS")))
+{
+
+}
+----
+
+Powyższy warunek jest dość zawiły i mało czytelne.
+Należy zapytać się samego siebie: „Na jakie pytanie stara się odpowiedzieć wartość warunku?”.
+Nie bardzo wiadomo.
+
+Dobrą praktyką jest umieszczenie wartości warunku w zmiennej lub funkcji.
+
+
+==== [green]#Poprawnie#
+[source,csharp]
+----
+bool czyNalezySieUpust = samochod.Rok > 2000 && (samochod.Marka == "kaszlak" ||
+samochod.Marka == "syrenka") && (samochod.numer.StartsWith("awd") || samochod.numer.StartsWith("23dwS"));
+
+private bool CzyNalezySieUpust(Car samochod)
+{
+    return samochod.Rok > 2000 && (samochod.Marka == "kaszlak" ||
+samochod.Marka == "syrenka") && (samochod.numer.StartsWith("awd") || samochod.numer.StartsWith("23dwS"));
+}
+----
+
+Pisz wyrazisty i czytelny kod zamiast komentarzy.
+Czyli nie opisuj kodu komentarzami a w zamian pisz w taki sposób aby kod był jak najbardziej czytelny.
+Używaj funkcji i umieszczaj zawiły kod w zmienne lokalne (dobrze nazwane).
+
+
+=== Rozdzielaj zawiłe warunki
+Rozdzielaj logiczną część kodu na prywatne metody lub funkcje.
+Czyli zamiast tworzyć ogromną metodę,
+zawierającą wiele logicznych bloków,
+lepiej podzielić ją na mniejsze prywatne odpowiednio nazwane.
+
+=== Jeśli to możliwe bądź deklaratywny
+Zamiast zawiłych pętli a w nich warunków używaj np. LINQ (C#) czy jLinq (JS).
+
+==== [red]#Błędnie#
+[source,csharp]
+----
+var poprawniUzytkownicy = new List<User>();
+
+foreach (var uzytkownik in uzytkownicy)
+{
+      if (uzytkownik.CzyAktywny
+      {
+          poprawniUzytkownicy.Add(uzytkownik);
+      }
+}
+----
+
+==== [green]#Poprawnie#
+[source,csharp]
+----
+var poprawniUzytkownicy = uzytkownicy.Where(uzytkownik => użytkownik.CzyAktywny);
+----
+
+=== Nie koduj na siłę
+
+==== [red]#Błędnie#
+[source,csharp]
+----
+switch (wiek)
+{
+   case 20:
+      return 100;
+   case 30:
+      return 200;
+}
+
+----
+
+==== [green]#Poprawnie#
+
+[%header, cols=3*]
+|===
+| ID | Wiek | Wartość
+
+| 1 | 20 | 100
+| 2 | 30 | 200
+|===
+
+
+W wersji poprawnej piszemy zapytanie do bazy, wyciągając odpowiednią wartość po kolumnie wiek.
+
+
+== Funkcje
+
+=== Nie powielaj tej samej logiki
+W sytuacjach gdy nasza funkcja zawiera wiele bloków logicznych,
+które są podobne a różnią się jedynie pewnymi aspektami należy wydzielić z takiej funkcji
+powtarzający się i kod i umieścić go w innej funkcji.
+
+==== [red]#Błędnie#
+[source,csharp]
+----
+If (CzyZalogowanyAdmin)
+{
+ 	if (this.InnerInfo == null)
+           return new List<T>();
+
+        var uid = this.InnerInfo.Uid;
+        var innerData = InnerData;
+
+        if (!innerData.ContainsKey(uid))
+            innerData.Add(uid, new List<T>());
+}
+
+If (CzyZalogowanySupeAdmin)
+{
+ 	if (this.InnerInfo == null)
+           return new List<T>();
+
+        var uid = this.InnerInfo.Uid;
+        var innerData = InnerData;
+
+        if (!innerData.ContainsKey(uid))
+            innerData.Add(uid, new List<T>());
+}
+
+----
+
+==== [green]#Poprawnie#
+Należy wydzielić kod zawarty w warunkach i umieścić go w funkcji.
+
+[source,csharp]
+----
+If (CzyZalogowanyAdmin)
+{
+     this.WykojCos();
+}
+----
+
+=== Nadmierne wcięcia (Arrow Code)
+
+==== [red]#Błędnie#
+[source,csharp]
+----
+If
+{
+  If
+  {
+    If
+    {
+      //właściwy kod
+    }
+  }
+}
+
+----
+
+Należy zminimalizować ilość wcięć maksymalnie do 2.
+
+Co należy zrobić aby rozwiązać problem wielu wcięć?
+
+- Można wydzielić metodę
+- Jak najszybciej wyjść z funkcji (Return Early)
+- Jak najszybciej rzucić wyjątkiem (Fail Fast)
+
+==== [green]#Poprawnie (wydzielenie metody)#
+[source,csharp]
+----
+If
+{
+     If
+     {
+        zrobCos();
+     }
+}
+----
+
+==== [green]#Poprawnie (Return Early)#
+[source,csharp]
+----
+If (!zalogowany)
+{    Return false; }
+
+If (!user.IsAdmin)
+{    Return false; }
+return true;
+----
+
+==== [green]#Poprawnie (Fail fast)#
+[source,csharp]
+----
+If (!zalogowany)
+{    throw new Exception(); }
+
+If (!user.IsAdmin)
+{    throw new Exception(); }
+//właściwy kod
+----
+
+Pisząc kod, staram się jak najszybciej wyjść z funkcji,
+powoduje to zminimalizowanie ilości kodu oraz zwiększa czytelność.
+
+=== Przenosimy logiczne bloki
+
+==== [red]#Błędnie#
+[source,csharp]
+----
+//sprawdza czy można dodać plik z odpowiednim rozszerzeniem oraz czy jest adminem
+If (rozszerzeniePliku == "mp4" || rozszerzeniePliku == "mp3" && czyJestAdminem)
+----
+
+==== [green]#Poprawnie#
+[source,csharp]
+----
+private bool czyMoznaDodacPlik(string rozszerzeniePliku)
+{
+   var poprawneRozszezeniaPlikow = rozszerzeniePliku == "mp4" ||
+                                   rozszerzeniePliku == "mp3" &&
+                                   czyJestAdminem;
+   return (poprawneRozszezeniaPlikow);
+}
+----
+
+
+W poprawnej wersji, cały warunek został przeniesiony do metody,
+która to dzięki swej nazwie opisuje intencje programisty.
+Dodatkowo rozszerzenia zostały wydzielone do zmiennej lokalnej.
+
+Funkcje i metody powinny wykonywać jedną – logiczną rzecz.
+Powyższa metoda „czyMoznaDodacPlik” powinna zostać jeszcze podzielona,
+gdyż obecnie wykonuje dwie logiczne rzeczy (sprawdza rozszerzenie i czy użytkownik jest adminem).
+Małe – logiczne funkcje, powodują lepsze ich późniejsze wykorzystywanie.
+
+=== Inicjacja zmiennych w locie (MayFly - Jętka)
+==== [red]#Błędnie#
+[source,csharp]
+----
+private bool MayFly()
+{
+   var b = false;
+   var c = string.Empty;
+   var d = true;
+   /*    Dalsza dłuuuga część kodu   */
+   c = "mp4";
+
+  /*    Dalsza dłuuuga część kodu   */
+
+   If (b)
+   {
+       /*    Dalsza dłuuuga część kodu   */
+       If (d)
+       {
+            /*    Dalsza dłuuuga część kodu   */
+
+       }
+   }
+}
+
+----
+
+==== [green]#Poprawnie#
+[source,csharp]
+----
+private bool MayFly()
+{
+   /*    dłuuuga część kodu   */
+   var c = "mp4";
+
+   /*    Dalsza dłuuuga część kodu   */
+
+   var b = false;
+   If (b)
+   {
+       /*    Dalsza dłuuuga część kodu   */
+       var d = true;
+       If (d)
+       {
+            /*    Dalsza dłuuuga część kodu   */
+
+       }
+   }
+}
+----
+
+Zmienne lokalne należy deklarować wg potrzeby (w locie) a nie na szczycie metody.
+Zwiększa to czytelność kodu, gdyż nie musimy scrollować w górę i w dół
+aby szukać odpowiedniej deklaracji tej zmiennej.
+Zmienne również tak jak metody powinny wykonywać jedną – logiczną rzecz.
+
+
+=== Liczba parametrów metody
+Należy starać się aby funkcja zawierała od 0 do 2 parametrów. Funkcję taką łatwiej zrozumieć i testować. +
+Ponadto będzie większe prawdopodobieństwo, że funkcja taka będzie wykonywała jedną – logiczną rzecz (a nie więcej).
+
+==== [red]#Błędnie#
+[source,csharp]
+----
+private bool Zarejestruj(Uzytkownik uzytkownik, bool wyslijMaila, bool wydrukujRaport)
+----
+
+==== [green]#Poprawnie#
+[source,csharp]
+----
+private bool Zarejestruj(Uzytkownik uzytkownik)
+----
+
+Aby poprawić powyższy przykład należałoby wyodrębnić 3 metody: Zarejestruj, WyslijMaila i WydrukujRaport.
+
+Należy zwrócić również uwagę na parametry typu bool (flag).
+Jeśli takowe występują, oznacza to prawdopodobnie, że funkcja będzie wykonywała dwie różne – logiczne rzeczy.
+
+=== Zbyt długie metod
+
+Treść metod powinna być jak najmniejsza. Poniżej sytuacje wskazujące, że funkcja może być już za długa:
+
+- Funkcja posiada komentarze i białe znaki (whitespace),
+- Funkcja nie mieści się na ekranie (potrzeba skrolowania)
+- Funkcję trudno nazwać
+- Funkcja posiada wiele warunków
+
+[quote, Robert C. Martin]
+____
+Funkcja zazwyczaj powinna zawierać nie więcej niż 20 linii kodu (bardzo rzadko 100) oraz nie więcej niż 3 parametry.
+____
+
+Ponadto: Proste funkcje mogą być długie. Zawiłe funkcje powinny być krótkie.
+
+=== Wyjątki
+
+Kod obejmujemy w komendę _try catch_ tylko wtedy gdy może logicznie zrozumieć dany wyjątek.
+W sytuacji, gdy nie rozumiemy wyjątku np. typ _Exception_, wówczas pozwalamy aby aplikacja się wywaliła. +
+Należy wykorzystywać określone wyjątki jak: _FileNotFoundExcetion_ zamiast _Exception_.
+W tym _Exception_ wyłapiemy teoretycznie wszystkie błędy aplikacji, co nie jest pożądanym zachowaniem.
+
+==== [red]#Błędnie#
+[source,csharp]
+----
+try
+{
+    Zarejestruj();
+}
+catch(Exception e)
+{
+    LogException(e);
+}
+
+WyslijMaila();
+
+----
+
+==== [green]#Poprawnie#
+[source,csharp]
+----
+Zarejestruj();
+
+WyslijMaila();
+----
+
+W powyższym przykładzie widzimy problem typu wyjątku.
+Tak naprawdę nie wiemy co wyłapujemy.
+Drugim problemem jest to, że pomimo błędu nadal wysyłany jest email.
+W takiej sytuacji powinniśmy albo dokładnie przeanalizować metodę
+_Zarejestruj_ i w niej umieścić odpowiednie bloki _try_ _catch_ albo w najgorszym przypadku usunąć _try catch_ i pozwolić aby aplikacja się wywaliła.
+
+Zawartość bloków _try catch_ powinny zawierać jak najmniej kodu.
+Jeśli jest zbyt dużo należy go zrefaktoryzować do poziomu metody.
+
+==== [red]#Błędnie#
+[source,csharp]
+----
+try
+{
+    //zbyt
+    //dużo
+    //skomplikowanego
+    //i brudnego
+    //kodu
+}
+catch(Exception e)
+{
+
+}
+----
+
+==== [green]#Poprawnie#
+[source,csharp]
+----
+try
+{
+    Zarejestruj();
+}
+catch(Exception e)
+{
+
+}
+
+----
+
+W metodach należy unikać zwracania wartości typu null.
+W takich sytuacjach należy lepiej rzucić wyjątkiem.
+
+== Klasy
+
+.Zakres obowiązków klasy powinien być silnie powiązany ze sobą
+- zwiększa czytelność
+- Zwiększa prawdopodobieństwo ponownego wykorzystania
+- Zapobiega przyciąganiu leniwych programistów (a dodam sobie metodę tutaj, która ni w ząb tu nie pasuje)
+
+.Uważaj na:
+- Metody, które nie współgrają z resztą klasy
+- Pola, które są używane tylko przez jedną metodę
+- Klasy, które często się zmieniają
+
+==== [red]#Błędnie#
+.Klasa: Pojazd
+- Edytuj pojazd
+- Zaktualizuj ceny
+- Ustal harmonogram konserwacji
+- Wyślij przypomnienie o konserwacji
+- Wybierz sposób finansowania
+- Obliczyć miesięczną ratę płatności
+
+==== [green]#Poprawnie#
+.Klasa: Pojazd
+- Edytuj pojazd
+- Zaktualizuj ceny
+
+.Klasa: Harmonogram konserwacji pojazdu
+- Ustal harmonogram konserwacji
+- Wyślij przypomnienie o konserwacji
+
+.Klasa Finansowanie pojazdu
+- Wybierz sposób finansowania
+- Obliczyć miesięczną ratę płatności
+
+Jak widać na powyższym przykładzie, w przypadku błędnego, wszystkie - niepowiązane metody znajdują się w 1 klasie.
+Należy wyodrębnić je do innych – powiązanych klas.
+
+
+=== Klasa jako parametr metody
+
+Należy używać klasy jako parametr metody zamiast dodawać nieskończoną ilość prostych parametrów.
+Łamie to zasadę max 2 parametrów.
+
+==== [red]#Błędnie#
+[source,csharp]
+----
+private bool Zarejestruj(string imie, string nazwisko, string haslo, string ksywka)
+----
+
+==== [green]#Poprawnie#
+[source,csharp]
+----
+private bool Zarejestruj(Uzytkownik uzytkownik)
+----
+
+=== Umieszczenie metod/pól w klasie
+Należy utrzymywać logiczne metody/pola niedaleko siebie (jeden pod drugim) – zwiększa to czytelność kodu.
+Kod powinno czytać się od góry w dół.
+
+[source,csharp]
+----
+private bool Zarejestruj()
+{
+    Sprawdz();
+}
+private bool Sprawdz()
+{
+    Oblicz()
+}
+private bool Oblicz()
+{
+}
+----
+
+Metody w klasie powinno czytać się jak paragrafy w książce.
+
+== Komentarze
+
+.Ogólne zasad:
+* Należy pisać wyrazisty kod, niż kiepski kod + komentarze.
+	** Przykład wyrazistego kodu: var czyUzytkownikZalogowany = true;
+	** Przykład nie wyrazistego kodu: var czyZalUsr = true;
+* Należy używać komentarzy tylko wówczas, gdy sam kod nie wystarczy
+
+=== Powtarzanie komentarzy
+Należy unikać komentarzy, które swoją treścią powtarzają to co jest zaprogramowane.
+
+==== [red]#Błędnie#
+[source,csharp]
+----
+var czyUzytkownikZalogowany = true; //ustawia zmienną: czy użytkownik jest zalogowany
+var uzytkwonik = new Uzytkownik; //Inicjuje nowego użytkownika
+----
+
+Zakładamy, że ten kto przegląda kod umie czytać i zna się na programowaniu.
+W tych przypadkach komentarze są zbędne.
+
+=== Opis intencji programisty poprzez komentarze
+
+Kod powinien być na tyle wyrazisty (czytelny) aby nie było konieczności jego komentowania.
+
+==== [red]#Błędnie#
+[source,csharp]
+----
+//upewniam się, że użytkownik jest administratorem
+If (user.Status == 2)
+----
+
+==== [green]#Poprawnie#
+[source,csharp]
+----
+If (user.Status == StatusUzytkownika.Admin)
+----
+
+Zamiast pisać komentarz lepiej zrefaktoryzować kod tak aby był bardziej czytelny.
+
+=== Komentarze typu „Przepraszam” lub „Ostrzegam”
+
+Nie należy pozostawiać komentarzy, zawierających przeprosiny za np. nie działający kod.
+Zamiast tego lepiej od razu naprawić błąd lub jeśli już musimy wstawić komentarz typu „TODO”.
+
+=== Kod typu „Zombie” – Zombie Code
+
+Nie należy pozostawiać po sobie zakomentowanego kodu.
+Jeśli usuwamy np. Pewną funkcjonalność ale nie jesteśmy pewnie czy np.
+Za tydzień jej nie będziemy potrzebować, wówczas pomimo to usuńmy ten kod a przywrócimy go z GITa czy Svna.
+
+Kod typu „Zombie” powoduje nie potrzebne zamieszanie dla osoby, która przegląda kod.
+
+
+==== [red]#Zombie Code (ten zakomentowany)#
+[source,csharp]
+----
+var prop = data.prop;
+this.SearchDictElemsDescr = data;
+this.isIDColumnHidden = false;
+this.CreateSearchPanels(id, data.val);
+this.EnableAddButton(1 == descr[7]);
+this.EnableExportButton(1 == descr[10]);
+//this.EnableEditButton(false);
+this.EnableAuditButton(false);
+//this.EnableEditSelectedButton(false);
+this.EnableCopyButton(false);
+//this.EnableDeleteButton(false);
+//panel.setTitle(descr[6]);
+Ext.getCmp('DCTSDictElemsSearchPanel').setTitle(descr[6]);
+this.DCTSDictElemsResultsPanelAfterRender();
+// var ownerLbl = this.findByFNetName('DCTSOwnerField')[0];
+//ownerLbl.setValue(prop.BusinessOwnerName);
+//var unitLbl = this.findByFNetName('DCTSUnitField')[0];
+//unitLbl.setValue(prop.BusinessUnitName);
+//var atenttionLbl = this.findByFNetName('DCTSAttentionField')[0];
+//atenttionLbl.setValue(prop.Comments);
+----
+
+Im mniej Zombie Code typ kod czyta się szybciej i lepiej.
+
+.Programista może zadawać sobie pytania:
+- czy ten kod został zakomentowany przypadkowo czy nie
+- jaki był cel komentowania tego kodu
+
+Takich pytań nie powinien zadawać sobie.
+
+=== Komentarze służące do podziału logiki
+==== [red]#Błędnie#
+[source,csharp]
+----
+private bool Zarejestruj()
+{
+    //Rozpoczynam pierwszą fazę szukania
+
+    Bla
+    Bla
+    Bla
+    Bla
+    Bla
+    Bla
+
+//Rozpoczynam drugą fazę szukania
+
+    Bla
+    Bla
+    Bla
+    Bla
+    Bla
+    Bla
+}
+----
+
+Jeśli występuje powyższa sytuacja, lepiej po prostu zrefaktoryzować, dzieląc kod na funkcje lub metodę.
+
+=== Komentarze, które można wstawiać
+- TODO, HACK itp.
+- Podsumowanie (summary) - //Generuje fakturę VAT dla klientów biznesowych
+- Dokumentacja - //Dokumentacja dostępna pod adresem: www.facebook.com/api
+
+
+== Zasady SOLID
+- *Single Responsibility* – pojedyncza odpowiedzialność metody (robi tylko jedną rzecz)
+- *Open Close Principle* – otwarta na rozszerzalność ale zamknięta na wszelakie modyfikacje
+- *Liskov Substitution Principle* - w każdym miejscu gdzie wykorzystujemy klasę bazową (rozszerzaną)
+	lub interfejs możemy wykorzystać każdą klasę potomną i nie wpłynie to na zmianę zachowania czy też wynik działania,
+	nie wpłynie negatywnie na działania aplikacji.
+	Przykład: mamy interfejs, który realizają 3 klasy.
+	Zasada może zostać złamana, jeśli zrobimy taki warunek np. w kontrolerze if(invoice is ProForma)...
+- *Interface Segregation* – czyli kontroler wykorzystując jakieś interfejs nie może być uzależniony od metod, z których nie korzysta. Dlatego też należy zawsze tworzyć małe interfejsy
+- *Dependency Inversion* – należy uzależniać się od abstrakcji (interfejs) a nie od implementacji (czysty kod np. w kontrolerze)
